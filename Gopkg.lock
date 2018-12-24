@@ -10,6 +10,14 @@
   version = "v0.14.1-m"
 
 [[projects]]
+  digest = "1:2b371822529fbe18ee84e5db59b1891b602064c44dd4bc9ca8d1920a9bb7f4a3"
+  name = "github.com/Swipecoin/go-bip44"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "6c956258fa289c7f2317413ef121f6a15b65cd3e"
+  version = "0.0.1"
+
+[[projects]]
   branch = "master"
   digest = "1:d6afaeed1502aa28e80a4ed0981d570ad91b2579193404256ce672ed0a609e0d"
   name = "github.com/beorn7/perks"
@@ -19,11 +27,29 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c0decf632843204d2b8781de7b26e7038584e2dcccc7e2f401e88ae85b1df2b7"
+  digest = "1:401d088d63d37e8da99e1cf7e917a465436a41a143ef16a0a8013873745a2ddd"
   name = "github.com/btcsuite/btcd"
-  packages = ["btcec"]
+  packages = [
+    "btcec",
+    "chaincfg",
+    "chaincfg/chainhash",
+    "wire",
+  ]
   pruneopts = "UT"
   revision = "67e573d211ace594f1366b4ce9d39726c4b19bd0"
+
+[[projects]]
+  branch = "master"
+  digest = "1:5be1c66caeb03381e4e7322eddfc0b06b26991ddba3ad39e009ccf67c20dfb18"
+  name = "github.com/btcsuite/btcutil"
+  packages = [
+    ".",
+    "base58",
+    "bech32",
+    "hdkeychain",
+  ]
+  pruneopts = "UT"
+  revision = "ab6388e0c60ae4834a1f57511e20c17b5f78be4b"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -442,7 +468,15 @@
   version = "v0.27.4"
 
 [[projects]]
-  digest = "1:b6621a5e9003d7d809993d49217a841d27ef85b4bc0459115d3fd1f8c1518999"
+  digest = "1:98c7f8a39334cff11ba2402d7e940941b5fcb40e1dd93be6b633a0a6fbaf46e5"
+  name = "github.com/tyler-smith/go-bip39"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "320452e9f0df352f7c65a459ab1a7ac987eec99a"
+  version = "v0.3.6"
+
+[[projects]]
+  digest = "1:e5a695493953035afc78ef3247a37cee520120bc575fc252729c2c51c20727c9"
   name = "golang.org/x/crypto"
   packages = [
     "chacha20poly1305",
@@ -454,6 +488,7 @@
     "internal/subtle",
     "nacl/box",
     "nacl/secretbox",
+    "pbkdf2",
     "poly1305",
     "ripemd160",
     "salsa20/salsa",
@@ -574,6 +609,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/MinterTeam/go-amino",
+    "github.com/Swipecoin/go-bip44",
     "github.com/btcsuite/btcd/btcec",
     "github.com/go-kit/kit/log/term",
     "github.com/gobuffalo/packr",

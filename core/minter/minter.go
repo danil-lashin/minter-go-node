@@ -20,6 +20,7 @@ import (
 	"math/big"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 type Blockchain struct {
@@ -453,4 +454,17 @@ func (app *Blockchain) calcMaxGas(height int64) uint64 {
 
 func (app *Blockchain) SetTmNode(node *tmNode.Node) {
 	app.tmNode = node
+}
+
+// for testing
+func (app *Blockchain) GetDeliverState() *state.StateDB {
+	return app.stateDeliver
+}
+
+func (app *Blockchain) WaitCommit() {
+	height := atomic.LoadInt64(&app.height)
+
+	for atomic.LoadInt64(&app.height) == height {
+		time.Sleep(100 * time.Millisecond)
+	}
 }

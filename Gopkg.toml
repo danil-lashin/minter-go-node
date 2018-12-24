@@ -53,6 +53,10 @@
   branch = "v1"
   name = "gopkg.in/check.v1"
 
+[[constraint]]
+  name = "github.com/miguelmota/go-ethereum-hdwallet"
+  revision = "8af197af5b280f901269c2d1ad0da4ae994063ee"
+
 [prune]
   go-tests = true
   unused-packages = true
