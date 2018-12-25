@@ -71,7 +71,7 @@ func startTendermintNode(app *minter.Blockchain) *tmNode.Node {
 		privval.LoadOrGenFilePV(cfg.PrivValidatorFile()),
 		nodeKey,
 		proxy.NewLocalClientCreator(app),
-		genesis.GetTestnetGenesis,
+		genesis.GetPreTestnetGenesis,
 		tmNode.DefaultDBProvider,
 		tmNode.DefaultMetricsProvider(cfg.Instrumentation),
 		log.With("module", "tendermint"),

@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	Network     = "minter-test-network-28-local"
+	Network     = "minter-test-network-28-pre"
 	genesisTime = time.Date(2018, 12, 20, 13, 0, 0, 0, time.UTC)
 )
 

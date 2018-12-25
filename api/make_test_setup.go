@@ -2,14 +2,14 @@ package api
 
 import (
 	"crypto/ecdsa"
-	"fmt"
+	"errors"
 	"github.com/MinterTeam/minter-go-node/core/transaction"
 	"github.com/MinterTeam/minter-go-node/core/types"
 	"github.com/MinterTeam/minter-go-node/crypto"
 	"github.com/MinterTeam/minter-go-node/helpers"
 	"github.com/MinterTeam/minter-go-node/rlp"
+	"github.com/Swipecoin/go-bip44"
 	"github.com/miguelmota/go-ethereum-hdwallet"
-	"github.com/pkg/errors"
 	"math/big"
 	"math/rand"
 )
@@ -23,8 +23,14 @@ type TestSetupResponse struct {
 var letterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
 
 func MakeTestSetup(env string) (*TestSetupResponse, error) {
-	mnemonic := "tag volcano eight thank tide danger coast health above argue embrace heavy"
-	wallet, err := hdwallet.NewFromMnemonic(mnemonic)
+	if env != "bot" {
+		return nil, errors.New("unknown env")
+	}
+
+	bitSize := 128
+	mnemonic, _ := bip44.NewMnemonic(bitSize)
+
+	wallet, err := hdwallet.NewFromMnemonic(mnemonic.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -35,16 +41,8 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 		return nil, err
 	}
 
-	fmt.Println(account.Address.Hex()) // 0xC49926C4124cEe1cbA0Ea94Ea31a6c12318df947
-
-	if env != "bot" {
-		return nil, errors.New("Unknown env")
-	}
-
-	pkey, err := crypto.GenerateKey()
-	if err != nil {
-		return nil, err
-	}
+	pkeyBytes, _ := wallet.PrivateKeyBytes(account)
+	pkey := crypto.ToECDSAUnsafe(pkeyBytes)
 
 	address := crypto.PubkeyToAddress(pkey.PublicKey)
 	state := blockchain.GetDeliverState()
@@ -82,7 +80,7 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 	}
 
 	return &TestSetupResponse{
-		Mnemonic:   mnemonic,
+		Mnemonic:   mnemonic.Value,
 		Address:    address,
 		CoinSymbol: coinSymbol,
 	}, nil
