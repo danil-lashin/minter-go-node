@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.9.4
+*Dec 25th, 2018*
+
+BUG FIXES
+
+- [core] Fix sell all coin tx
+
+## 0.9.2
+*Dec 25th, 2018*
+
+BUG FIXES
+
+- [core] Increase max block bytes
+
+## 0.9.1
+*Dec 24th, 2018*
+
+BUG FIXES
+
+- [api] Fix create coin tx error
+
 ## 0.9.0
 *Dec 24th, 2018*
 

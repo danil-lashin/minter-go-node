@@ -48,6 +48,8 @@ type Blockchain struct {
 const (
 	ValidatorPresent = 1
 	ValidatorAbsent  = 2
+
+	BlockMaxBytes = 10000 // TODO: change to 10000000
 )
 
 var (
@@ -286,7 +288,7 @@ func (app *Blockchain) EndBlock(req abciTypes.RequestEndBlock) abciTypes.Respons
 		ValidatorUpdates: updates,
 		ConsensusParamUpdates: &abciTypes.ConsensusParams{
 			BlockSize: &abciTypes.BlockSizeParams{
-				MaxBytes: 10000,
+				MaxBytes: BlockMaxBytes,
 				MaxGas:   int64(maxGas),
 			},
 		},
