@@ -50,16 +50,9 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 	// add 100,000 MNT to balance
 	state.AddBalance(address, types.GetBaseCoin(), helpers.BipToPip(big.NewInt(100000)))
 
-	volume := helpers.BipToPip(big.NewInt(10000))
-	reserve := helpers.BipToPip(big.NewInt(10000))
 	var coinSymbol types.CoinSymbol
-	for i := range coinSymbol {
-		coinSymbol[i] = byte(letterRunes[rand.Intn(len(letterRunes))])
-	}
-
-	// create coin with random symbol
-	state.CreateCoin(coinSymbol, "TEST COIN", volume, 10, reserve)
-	state.AddBalance(address, coinSymbol, volume)
+	copy(coinSymbol[:], []byte("TESTBOT"))
+	state.AddBalance(address, coinSymbol, helpers.BipToPip(big.NewInt(1000)))
 
 	// create candidate
 	pubkey := make([]byte, 32)
