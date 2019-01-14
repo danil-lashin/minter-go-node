@@ -97,6 +97,8 @@ Type of transaction is determined by a single byte.
 +----------------------------------+---------+
 | **TypeMultisend**                | 0x0D    |
 +----------------------------------+---------+
+| **TypeEditCandidate**            | 0x0E    |
++----------------------------------+---------+
 
 Send transaction
 ^^^^^^^^^^^^^^^^
@@ -368,4 +370,21 @@ Transaction for sending coins to multiple addresses.
         Coin  [10]byte
         To    [20]byte
         Value *big.Int
+    }
+
+Edit candidate transaction
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Type: **0x0E**
+
+Transaction for editing existing candidate
+
+*Data field contents:*
+
+.. code-block:: go
+
+    type EditCandidateData struct {
+        PubKey           []byte
+        RewardAddress    [20]byte
+        OwnerAddress     [20]byte
     }
