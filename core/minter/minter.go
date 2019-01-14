@@ -561,4 +561,3 @@ func (app *Blockchain) WaitCommit() {
 		time.Sleep(100 * time.Millisecond)
 	}
 }
-

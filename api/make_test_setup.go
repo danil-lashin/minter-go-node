@@ -18,6 +18,7 @@ type TestSetupResponse struct {
 	Mnemonic   string           `json:"mnemonic"`
 	Address    types.Address    `json:"address"`
 	CoinSymbol types.CoinSymbol `json:"coin_symbol"`
+	Candidate  types.Pubkey     `json:"candidate"`
 }
 
 var letterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
@@ -57,7 +58,7 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 	// create candidate
 	pubkey := make([]byte, 32)
 	rand.Read(pubkey)
-	state.CreateCandidate(types.Address{}, types.Address{}, pubkey, 10, 0, types.GetBaseCoin(), helpers.BipToPip(big.NewInt(1)))
+	state.CreateCandidate(address, address, pubkey, 10, 0, types.GetBaseCoin(), helpers.BipToPip(big.NewInt(10000)))
 
 	// update state
 	blockchain.WaitCommit()
@@ -76,6 +77,7 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 		Mnemonic:   mnemonic.Value,
 		Address:    address,
 		CoinSymbol: coinSymbol,
+		Candidate:  pubkey,
 	}, nil
 }
 
