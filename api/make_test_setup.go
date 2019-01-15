@@ -2,6 +2,7 @@ package api
 
 import (
 	"crypto/ecdsa"
+	"encoding/hex"
 	"errors"
 	"github.com/MinterTeam/minter-go-node/core/transaction"
 	"github.com/MinterTeam/minter-go-node/core/types"
@@ -68,7 +69,8 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 		return nil, err
 	}
 
-	err = delegateTx(pkey, pubkey)
+	b, _ := hex.DecodeString("b52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0")
+	err = delegateTx(pkey, b)
 	if err != nil {
 		return nil, err
 	}
