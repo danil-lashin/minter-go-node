@@ -9,7 +9,6 @@ import (
 	"github.com/MinterTeam/minter-go-node/core/types"
 	"github.com/MinterTeam/minter-go-node/crypto"
 	"github.com/MinterTeam/minter-go-node/helpers"
-	"github.com/MinterTeam/minter-go-node/log"
 	"github.com/MinterTeam/minter-go-node/rlp"
 	"github.com/Swipecoin/go-bip44"
 	"github.com/miguelmota/go-ethereum-hdwallet"
@@ -27,7 +26,7 @@ type TestSetupResponse struct {
 
 func MakeTestSetup(env string) (*TestSetupResponse, error) {
 	nonce := uint64(1)
-	log.Error("T1")
+
 	if env != "bot" {
 		return nil, errors.New("unknown env")
 	}
@@ -47,7 +46,7 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 	address := crypto.PubkeyToAddress(pkey.PublicKey)
 
 	state := blockchain.GetDeliverState()
-	log.Error("T2")
+
 	// add 100,000 MNT to balance
 	state.AddBalance(address, types.GetBaseCoin(), helpers.BipToPip(big.NewInt(1000000)))
 
@@ -55,7 +54,6 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 	copy(coinSymbol[:], []byte("TESTBOT"))
 
 	if !state.CoinExists(coinSymbol) {
-		log.Error("T3")
 		blockchain.WaitCommit()
 		err = createCoin(pkey, coinSymbol, nonce)
 		if err != nil {
@@ -63,7 +61,6 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 		}
 		nonce++
 	}
-	log.Error("T4")
 
 	value := helpers.BipToPip(big.NewInt(1000))
 	state.AddBalance(address, coinSymbol, value)
@@ -72,7 +69,6 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 
 	blockchain.WaitCommit()
 
-	log.Error("T5")
 	// create candidate
 	pubkey := make([]byte, 32)
 	rand.Seed(time.Now().Unix())
@@ -83,8 +79,6 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 	}
 	nonce++
 
-	log.Error("T6")
-
 	for i := 0; i < 4; i++ {
 		err = sendTx(pkey, nonce)
 		if err != nil {
@@ -93,14 +87,11 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 		nonce++
 	}
 
-	log.Error("T7")
 	b, _ := hex.DecodeString("b52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0")
 	err = delegateTx(pkey, b, nonce)
 	if err != nil {
 		return nil, err
 	}
-
-	log.Error("T8")
 
 	return &TestSetupResponse{
 		Mnemonic:   mnemonic.Value,
