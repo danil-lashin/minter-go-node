@@ -22,9 +22,8 @@ type TestSetupResponse struct {
 	Candidate  types.Pubkey     `json:"candidate"`
 }
 
-var letterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
-
 func MakeTestSetup(env string) (*TestSetupResponse, error) {
+	nonce := uint64(1)
 	if env != "bot" {
 		return nil, errors.New("unknown env")
 	}
@@ -54,23 +53,41 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 
 	var coinSymbol types.CoinSymbol
 	copy(coinSymbol[:], []byte("TESTBOT"))
-	state.AddBalance(address, coinSymbol, helpers.BipToPip(big.NewInt(1000)))
+
+	if !state.CoinExists(coinSymbol) {
+		err = createCoin(pkey, coinSymbol, nonce)
+		if err != nil {
+			return nil, err
+		}
+		nonce++
+	}
+
+	value := helpers.BipToPip(big.NewInt(1000))
+	state.AddBalance(address, coinSymbol, value)
+	state.AddCoinVolume(coinSymbol, value)
+	state.AddCoinReserve(coinSymbol, value)
 
 	// create candidate
 	pubkey := make([]byte, 32)
 	rand.Read(pubkey)
-	state.CreateCandidate(address, address, pubkey, 10, 0, types.GetBaseCoin(), helpers.BipToPip(big.NewInt(10000)))
+
+	err = createCandidate(pkey, pubkey, nonce)
+	if err != nil {
+		return nil, err
+	}
+	nonce++
 
 	// update state
 	blockchain.WaitCommit()
 
-	err = sendTx(pkey)
+	err = sendTx(pkey, nonce)
 	if err != nil {
 		return nil, err
 	}
+	nonce++
 
 	b, _ := hex.DecodeString("b52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0")
-	err = delegateTx(pkey, b)
+	err = delegateTx(pkey, b, nonce)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +100,89 @@ func MakeTestSetup(env string) (*TestSetupResponse, error) {
 	}, nil
 }
 
-func sendTx(pkey *ecdsa.PrivateKey) error {
+func createCoin(pkey *ecdsa.PrivateKey, coinSymbol types.CoinSymbol, nonce uint64) error {
+	data := transaction.CreateCoinData{
+		Name:                 "",
+		Symbol:               coinSymbol,
+		InitialAmount:        helpers.BipToPip(big.NewInt(100)),
+		InitialReserve:       helpers.BipToPip(big.NewInt(100)),
+		ConstantReserveRatio: 100,
+	}
+
+	encodedData, err := rlp.EncodeToBytes(data)
+
+	if err != nil {
+		return err
+	}
+
+	tx := transaction.Transaction{
+		Nonce:         nonce,
+		GasPrice:      big.NewInt(1),
+		GasCoin:       types.GetBaseCoin(),
+		Type:          transaction.TypeCreateCoin,
+		Data:          encodedData,
+		SignatureType: transaction.SigTypeSingle,
+	}
+
+	if err := tx.Sign(pkey); err != nil {
+		return err
+	}
+
+	encodedTx, err := rlp.EncodeToBytes(tx)
+	if err != nil {
+		return err
+	}
+
+	_, err = client.BroadcastTxCommit(encodedTx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func createCandidate(pkey *ecdsa.PrivateKey, publicKey types.Pubkey, nonce uint64) error {
+	data := transaction.DeclareCandidacyData{
+		Address:    crypto.PubkeyToAddress(pkey.PublicKey),
+		PubKey:     publicKey,
+		Commission: 10,
+		Coin:       types.GetBaseCoin(),
+		Stake:      helpers.BipToPip(big.NewInt(1000)),
+	}
+
+	encodedData, err := rlp.EncodeToBytes(data)
+
+	if err != nil {
+		return err
+	}
+
+	tx := transaction.Transaction{
+		Nonce:         nonce,
+		GasPrice:      big.NewInt(1),
+		GasCoin:       types.GetBaseCoin(),
+		Type:          transaction.TypeDeclareCandidacy,
+		Data:          encodedData,
+		SignatureType: transaction.SigTypeSingle,
+	}
+
+	if err := tx.Sign(pkey); err != nil {
+		return err
+	}
+
+	encodedTx, err := rlp.EncodeToBytes(tx)
+	if err != nil {
+		return err
+	}
+
+	_, err = client.BroadcastTxCommit(encodedTx)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func sendTx(pkey *ecdsa.PrivateKey, nonce uint64) error {
 	value := helpers.BipToPip(big.NewInt(10))
 	to := types.Address([20]byte{1})
 
@@ -100,7 +199,7 @@ func sendTx(pkey *ecdsa.PrivateKey) error {
 	}
 
 	tx := transaction.Transaction{
-		Nonce:         1,
+		Nonce:         nonce,
 		GasPrice:      big.NewInt(1),
 		GasCoin:       types.GetBaseCoin(),
 		Type:          transaction.TypeSend,
@@ -125,7 +224,7 @@ func sendTx(pkey *ecdsa.PrivateKey) error {
 	return nil
 }
 
-func delegateTx(pkey *ecdsa.PrivateKey, candidatePubKey types.Pubkey) error {
+func delegateTx(pkey *ecdsa.PrivateKey, candidatePubKey types.Pubkey, nonce uint64) error {
 	value := helpers.BipToPip(big.NewInt(100))
 
 	data := transaction.DelegateData{
@@ -140,7 +239,7 @@ func delegateTx(pkey *ecdsa.PrivateKey, candidatePubKey types.Pubkey) error {
 	}
 
 	tx := transaction.Transaction{
-		Nonce:         2,
+		Nonce:         nonce,
 		GasPrice:      big.NewInt(1),
 		GasCoin:       types.GetBaseCoin(),
 		Type:          transaction.TypeDelegate,

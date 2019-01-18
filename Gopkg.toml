@@ -53,13 +53,13 @@
   branch = "v1"
   name = "gopkg.in/check.v1"
 
-[[constraint]]
-  name = "github.com/miguelmota/go-ethereum-hdwallet"
-  revision = "8af197af5b280f901269c2d1ad0da4ae994063ee"
-
 [[override]]
   name = "golang.org/x/crypto"
-  revision = "505ab145d0a99da450461ae2c1a9f6cd10d1f447"
+  branch = "master"
+
+[[override]]
+  name = "golang.org/x/net"
+  branch = "master"
 
 [prune]
   go-tests = true
