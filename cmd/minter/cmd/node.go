@@ -9,6 +9,7 @@ import (
 	"github.com/MinterTeam/minter-go-node/eventsdb"
 	"github.com/MinterTeam/minter-go-node/gui"
 	"github.com/MinterTeam/minter-go-node/log"
+	"github.com/MinterTeam/minter-go-node/manager"
 	"github.com/gobuffalo/packr"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/abci/types"
@@ -74,11 +75,15 @@ func runNode() error {
 		go gui.Run(cfg.GUIListenAddress)
 	}
 
+	stopManager := make(chan bool)
+	go manager.Run(app, client, cfg, stopManager)
+
 	// Recheck mempool. Currently kind a hack.
 	go recheckMempool(node, cfg)
 
 	common.TrapSignal(log.With("module", "trap"), func() {
 		// Cleanup
+		stopManager <- true
 		err := node.Stop()
 		app.Stop()
 		if err != nil {

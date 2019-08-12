@@ -31,3 +31,7 @@ func GetMinterConfigPath() string {
 
 	return GetMinterHome() + "/config/config.toml"
 }
+
+func GetManagerSocket() string {
+	return GetMinterHome() + "/manager.sock"
+}
