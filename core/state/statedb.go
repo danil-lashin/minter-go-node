@@ -2131,3 +2131,7 @@ func (s *StateDB) Height() uint64 {
 func (s *StateDB) DB() dbm.DB {
 	return s.db
 }
+
+func (s *StateDB) DeleteVersion(height int64) error {
+	return s.iavl.DeleteVersion(height)
+}

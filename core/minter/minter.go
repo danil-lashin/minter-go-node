@@ -599,3 +599,20 @@ func (app *Blockchain) calcMaxGas(height uint64) uint64 {
 
 	return newMaxGas
 }
+
+func (app *Blockchain) PruneStates(fromHeight int64, toHeight int64) {
+	for i := fromHeight; i <= toHeight; i++ {
+		if err := app.stateDeliver.DeleteVersion(i); err != nil {
+			log.Error(err.Error())
+		}
+	}
+}
+
+func (app *Blockchain) ExportStates(fromHeight int64, toHeight int64) error {
+	for i := fromHeight; i <= toHeight; i++ {
+		if err := app.stateDeliver.DeleteVersion(i); err != nil {
+			log.Error(err.Error())
+		}
+	}
+	return nil
+}

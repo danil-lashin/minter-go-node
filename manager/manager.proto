@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package manager;
+
+service Manager {
+  rpc GetStatus (StatusRequest) returns (StatusReply) {}
+  rpc PruneStates (PruneStatesRequest) returns (PruneStatesReply) {}
+  rpc ExportStates (ExportStatesRequest) returns (ExportStatesReply) {}
+}
+
+message StatusRequest {
+}
+
+message StatusReply {
+  int64 height = 1;
+}
+
+message PruneStatesRequest {
+  int64 from_height = 1;
+  int64 to_height = 2;
+}
+
+message PruneStatesReply {
+  bool success = 1;
+}
+
+message ExportStatesRequest {
+  int64 from_height = 1;
+  int64 to_height = 2;
+}
+
+message ExportStatesReply {
+  bool success = 1;
+}
+
